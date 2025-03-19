@@ -1,0 +1,4 @@
+gradio
+pydantic
+llama-index
+openai
