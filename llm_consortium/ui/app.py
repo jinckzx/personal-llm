@@ -49,6 +49,7 @@ def create_ui():
                 
                 gr.Markdown("## Results")
                 synthesis = gr.Textbox(label="Synthesized Answer", interactive=False)
+                dissenting_views = gr.Textbox(label="Dissenting View", interactive=False)
                 analysis = gr.Textbox(label="Analysis", interactive=False)
                 confidence_out = gr.Number(label="Confidence Score")
                 
@@ -151,7 +152,7 @@ def create_ui():
         run_btn.click(
             run_consortium,
             [prompt, model_list, arbiter, confidence, max_iter, min_iter],
-            [synthesis, analysis, confidence_out, responses, download]
+            [synthesis, analysis, dissenting_views, confidence_out, responses, download]
         )
     
     return ui

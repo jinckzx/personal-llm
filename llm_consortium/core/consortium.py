@@ -391,7 +391,7 @@ class ConsortiumRunner:
         
         Provide:
         1. A combined best answer
-        2. Confidence score between 0-1
+        2. Confidence score between 0-1 include upto two decimal points
         3. Brief analysis of differences"""
         
         response = await self.client.chat.completions.create(
@@ -404,8 +404,13 @@ class ConsortiumRunner:
         return {
             "text": content,
             "confidence": self._extract_confidence(content),
-            "analysis": self._extract_analysis(content)
+            "analysis": self._extract_analysis(content),
+            "dissenting_views": self._extract_dissent(content),
         }
+        
+    def _extract_dissent(self, text: str) -> str:
+        # Add your dissent extraction logic here
+        return "Dissenting views placeholder"
 
     def _extract_confidence(self, text: str) -> float:
         """Extract confidence score from text."""
