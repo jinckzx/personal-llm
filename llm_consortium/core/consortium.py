@@ -294,6 +294,8 @@ class ConsortiumRunner:
             
             ### Confidence Score:
             [A numerical value between 0.00 and 1.00]
+            
+            ### Model: {model}
             """
             
 
@@ -330,7 +332,6 @@ class ConsortiumRunner:
         try:
             for iteration in range(config.max_iterations):
                 logger.info(f"Starting iteration {iteration + 1} of {config.max_iterations}")
-
                 # Create tasks for all model instances
                 tasks = [
                     self._query_model(model, prompt, instance, iteration)
@@ -440,7 +441,11 @@ class ConsortiumRunner:
         [Your analysis here]
         
         ### Dissenting Views:
-        [Any dissenting opinions or alternative perspectives]"""
+        [Any dissenting opinions or alternative perspectives]
+        
+        ### Arbiter Model:
+        Arbiter model: {arbiter}
+        """
         
         response = await self.client.chat.completions.create(
             model=arbiter,
