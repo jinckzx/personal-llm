@@ -1,4 +1,3 @@
-# llm_consortium/core/logging.py
 import logging
 import os
 import sys
@@ -17,38 +16,35 @@ def configure_logging(
     Configure and return a logger with both file and console handlers.
     
     Args:
-        name (str): Logger name
-        log_dir (str): Directory to store log files
-        log_level (str): Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-        max_bytes (int): Max log file size before rotation
-        backup_count (int): Number of backup logs to keep
+        name (str): Logger name.
+        log_dir (str): Directory to store log files.
+        log_level (str): Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL).
+        max_bytes (int): Max log file size before rotation.
+        backup_count (int): Number of backup logs to keep.
         
     Returns:
-        logging.Logger: Configured logger instance
+        logging.Logger: Configured logger instance.
     """
-    # Create log directory if it doesn't exist
-    Path(log_dir).mkdir(parents=True, exist_ok=True)
+    # Ensure the log directory exists
+    os.makedirs(log_dir, exist_ok=True)
     
-    # Get the logging level
+    # Determine logging level
     level = getattr(logging, log_level.upper(), logging.INFO)
     
-    # Create logger
+    # Get or create logger
     logger = logging.getLogger(name)
     logger.setLevel(level)
     
-    # Prevent propagation to root logger
-    logger.propagate = False
-    
-    # Clear existing handlers
+    # Prevent duplicate log handlers
     if logger.hasHandlers():
         logger.handlers.clear()
         
-    # Formatting
+    # Log format
     fmt = "%(asctime)s - %(name)s - %(levelname)s - %(module)s:%(lineno)d - %(message)s"
     formatter = logging.Formatter(fmt=fmt, datefmt="%Y-%m-%d %H:%M:%S")
     
     # File handler with rotation
-    log_file = Path(log_dir) / "consortium.log"
+    log_file = os.path.join(log_dir, "consortium.log")
     file_handler = RotatingFileHandler(
         log_file,
         maxBytes=max_bytes,
@@ -61,7 +57,7 @@ def configure_logging(
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(formatter)
     
-    # Add handlers
+    # Add handlers to logger
     logger.addHandler(file_handler)
     logger.addHandler(console_handler)
     
@@ -72,12 +68,12 @@ def get_logger(name: Optional[str] = None) -> logging.Logger:
     Get a configured logger instance.
     
     Args:
-        name (str, optional): Logger name. Defaults to root logger name.
+        name (str, optional): Logger name. Defaults to "llm_consortium".
         
     Returns:
-        logging.Logger: Configured logger instance
+        logging.Logger: Configured logger instance.
     """
     return logging.getLogger(name or "llm_consortium")
 
-# Initialize default logger when module is imported
-logger = get_logger(__name__)
+# Initialize and configure the default logger when the module is imported
+logger = configure_logging()
