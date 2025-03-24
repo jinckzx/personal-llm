@@ -28,3 +28,23 @@
 2025-03-20 17:06:09 - llm_consortium - ERROR - consortium:325 - Error querying model gpt-4o-mini: Connection error.
 2025-03-20 17:06:09 - llm_consortium - ERROR - consortium:325 - Error querying model gpt-3.5-turbo: Connection error.
 2025-03-20 17:06:11 - llm_consortium - ERROR - consortium:380 - Error in consortium execution: Connection error.
+2025-03-24 10:48:09 - llm_consortium - INFO - consortium:340 - Starting iteration 1 of 4
+2025-03-24 10:48:20 - llm_consortium - INFO - consortium:340 - Starting iteration 2 of 4
+2025-03-24 10:48:31 - llm_consortium - INFO - consortium:376 - Stopping early at iteration 2 (confidence threshold met)
+2025-03-24 11:03:55 - llm_consortium - INFO - consortium:340 - Starting iteration 1 of 4
+2025-03-24 11:04:12 - llm_consortium - INFO - consortium:340 - Starting iteration 2 of 4
+2025-03-24 11:04:25 - llm_consortium - INFO - consortium:340 - Starting iteration 3 of 4
+2025-03-24 11:04:37 - llm_consortium - INFO - consortium:340 - Starting iteration 4 of 4
+2025-03-24 11:08:53 - llm_consortium - INFO - consortium:340 - Starting iteration 1 of 4
+2025-03-24 11:09:09 - llm_consortium - INFO - consortium:340 - Starting iteration 2 of 4
+2025-03-24 11:09:25 - llm_consortium - INFO - consortium:376 - Stopping early at iteration 2 (confidence threshold met)
+2025-03-24 11:33:45 - llm_consortium - INFO - consortium:340 - Starting iteration 1 of 4
+2025-03-24 11:33:57 - llm_consortium - INFO - consortium:340 - Starting iteration 2 of 4
+2025-03-24 11:34:09 - llm_consortium - INFO - consortium:340 - Starting iteration 3 of 4
+2025-03-24 11:34:23 - llm_consortium - INFO - consortium:340 - Starting iteration 4 of 4
+2025-03-24 13:03:09 - llm_consortium - INFO - consortium:340 - Starting iteration 1 of 4
+2025-03-24 13:03:26 - llm_consortium - INFO - consortium:340 - Starting iteration 2 of 4
+2025-03-24 13:03:42 - llm_consortium - INFO - consortium:340 - Starting iteration 3 of 4
+2025-03-24 13:03:59 - llm_consortium - INFO - consortium:340 - Starting iteration 4 of 4
+2025-03-24 16:29:26 - llm_consortium - INFO - consortium:340 - Starting iteration 1 of 3
+2025-03-24 16:29:45 - llm_consortium - INFO - consortium:376 - Stopping early at iteration 1 (confidence threshold met)

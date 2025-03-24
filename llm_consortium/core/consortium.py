@@ -195,6 +195,7 @@ from openai import AsyncOpenAI
 from ..config.models import ConsortiumConfig, LogEntry
 from .logging import logger
 from ..utils.prompt_utils import read_iteration_prompt
+from ..utils.prompt_utils import read_arbiter_prompt
 from dotenv import load_dotenv
 import re
 load_dotenv()
@@ -424,48 +425,101 @@ class ConsortiumRunner:
     #     """Extract analysis from text."""
     #     # Add your analysis extraction logic here
     #     return "Analysis placeholder"
+    
+    # async def _synthesize_responses(self, prompt: str, responses: List[LogEntry], arbiter: str) -> Dict:
+    #     """Synthesize responses using the arbiter model."""
+    #     comparisons = "\n".join(
+    #         f"{entry.model}:\n{entry.response}" 
+    #         for entry in responses
+    #     )
+        
+    #     synthesis_prompt = f"""Evaluate these responses to: {prompt}
+        
+    #     {comparisons}
+        
+    #     Provide your response in EXACTLY this format:
+        
+    #     ### Combined Best Answer:
+    #     [Your synthesized answer here]
+        
+    #     ### Confidence Score:
+    #     [A numerical value between 0.00 and 1.00]
+        
+    #     ### Analysis of Differences:
+    #     [Your analysis here]
+        
+    #     ### Dissenting Views:
+    #     [Any dissenting opinions or alternative perspectives]
+        
+    #     ### Arbiter Model:
+    #     Arbiter model: {arbiter}
+    #     """
+        
+    #     response = await self.client.chat.completions.create(
+    #         model=arbiter,
+    #         messages=[{"role": "user", "content": synthesis_prompt}],
+    #         temperature=0.2
+    #     )
+        
+    #     content = response.choices[0].message.content
+    #     return {
+    #         "text": content,
+    #         "confidence": self._extract_confidence(content),
+    #         "analysis": self._extract_analysis(content),
+    #         "dissenting_views": self._extract_dissent(content),
+    #     }
     async def _synthesize_responses(self, prompt: str, responses: List[LogEntry], arbiter: str) -> Dict:
-        """Synthesize responses using the arbiter model."""
-        comparisons = "\n".join(
-            f"{entry.model}:\n{entry.response}" 
+        """Synthesize responses using the arbiter model.
+        
+        Args:
+            prompt: The original user prompt
+            responses: List of LogEntry objects containing model responses
+            arbiter: Name of the arbiter model to use
+            
+        Returns:
+            Dict containing synthesized response components
+        """
+        # Format the model comparisons with their confidence scores
+        comparisons = "\n\n".join(
+            f"Model: {entry.model}\nConfidence: {entry.confidence:.2f}\nResponse:\n{entry.response}"
             for entry in responses
         )
         
-        synthesis_prompt = f"""Evaluate these responses to: {prompt}
-        
-        {comparisons}
-        
-        Provide your response in EXACTLY this format:
-        
-        ### Combined Best Answer:
-        [Your synthesized answer here]
-        
-        ### Confidence Score:
-        [A numerical value between 0.00 and 1.00]
-        
-        ### Analysis of Differences:
-        [Your analysis here]
-        
-        ### Dissenting Views:
-        [Any dissenting opinions or alternative perspectives]
-        
-        ### Arbiter Model:
-        Arbiter model: {arbiter}
-        """
-        
-        response = await self.client.chat.completions.create(
-            model=arbiter,
-            messages=[{"role": "user", "content": synthesis_prompt}],
-            temperature=0.2
+        # Load the arbiter prompt template
+        synthesis_template = read_arbiter_prompt()
+        synthesis_prompt = synthesis_template.format(
+            prompt=prompt,
+            comparisons=comparisons,
+            arbiter=arbiter
         )
         
-        content = response.choices[0].message.content
-        return {
-            "text": content,
-            "confidence": self._extract_confidence(content),
-            "analysis": self._extract_analysis(content),
-            "dissenting_views": self._extract_dissent(content),
-        }
+        try:
+            # Query the arbiter model
+            response = await self.client.chat.completions.create(
+                model=arbiter,
+                messages=[{"role": "user", "content": synthesis_prompt}],
+                temperature=0.2
+            )
+            content = response.choices[0].message.content
+            
+            # Parse and return the structured response
+            return {
+                "text": content,
+                "confidence": self._extract_confidence(content),
+                "analysis": self._extract_analysis(content),
+                "dissenting_views": self._extract_dissent(content),
+                "arbiter_model": arbiter
+            }
+            
+        except Exception as e:
+            logger.error(f"Error in arbiter synthesis: {str(e)}")
+            return {
+                "text": f"Error during synthesis: {str(e)}",
+                "confidence": 0.0,
+                "analysis": "",
+                "dissenting_views": "",
+                "arbiter_model": arbiter
+            }
     def _extract_confidence(self, text: str) -> float:
         """Extract confidence score from text using precise parsing."""
         print(f"Raw LLM Response: {text}")  # Debugging Line
