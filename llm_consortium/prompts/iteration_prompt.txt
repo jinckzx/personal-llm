@@ -1,0 +1,13 @@
+Context: {context}
+            
+Question: {prompt}
+            
+Provide your response in this exact format:
+            
+### Answer:
+[Your answer here]
+            
+### Confidence Score:
+[A numerical value between 0.00 and 1.00]
+            
+### Model: {model}

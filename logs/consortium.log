@@ -20,3 +20,11 @@
 2025-03-20 15:08:46 - llm_consortium - INFO - consortium:334 - Starting iteration 3 of 5
 2025-03-20 15:09:03 - llm_consortium - INFO - consortium:334 - Starting iteration 4 of 5
 2025-03-20 15:09:20 - llm_consortium - INFO - consortium:370 - Stopping early at iteration 4 (confidence threshold met)
+2025-03-20 17:04:25 - llm_consortium - INFO - consortium:340 - Starting iteration 1 of 5
+2025-03-20 17:04:57 - llm_consortium - INFO - consortium:340 - Starting iteration 2 of 5
+2025-03-20 17:05:20 - llm_consortium - INFO - consortium:340 - Starting iteration 3 of 5
+2025-03-20 17:05:47 - llm_consortium - INFO - consortium:340 - Starting iteration 4 of 5
+2025-03-20 17:06:09 - llm_consortium - ERROR - consortium:325 - Error querying model gpt-3.5-turbo: Connection error.
+2025-03-20 17:06:09 - llm_consortium - ERROR - consortium:325 - Error querying model gpt-4o-mini: Connection error.
+2025-03-20 17:06:09 - llm_consortium - ERROR - consortium:325 - Error querying model gpt-3.5-turbo: Connection error.
+2025-03-20 17:06:11 - llm_consortium - ERROR - consortium:380 - Error in consortium execution: Connection error.

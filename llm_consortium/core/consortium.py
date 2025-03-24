@@ -194,6 +194,7 @@ from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
 from openai import AsyncOpenAI
 from ..config.models import ConsortiumConfig, LogEntry
 from .logging import logger
+from ..utils.prompt_utils import read_iteration_prompt
 from dotenv import load_dotenv
 import re
 load_dotenv()
@@ -205,6 +206,7 @@ class ConsortiumRunner:
     def __init__(self):
         self.client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         self.index = VectorStoreIndex.from_documents(SimpleDirectoryReader("data").load_data())
+        self.iteration_prompt_template = read_iteration_prompt()
         self._init_db()
 
     def _init_db(self):
@@ -281,22 +283,26 @@ class ConsortiumRunner:
             # Get relevant context
             query_engine = self.index.as_query_engine()
             context = str(query_engine.query(prompt))
+            model_prompt = self.iteration_prompt_template.format(
+                context=context,
+                prompt=prompt,
+                model=model
+            )
+            # model_prompt = f"""
+            # Context: {context}
             
-            model_prompt = f"""
-            Context: {context}
+            # Question: {prompt}
             
-            Question: {prompt}
+            # Provide your response in this exact format:
             
-            Provide your response in this exact format:
+            # ### Answer:
+            # [Your answer here]
             
-            ### Answer:
-            [Your answer here]
+            # ### Confidence Score:
+            # [A numerical value between 0.00 and 1.00]
             
-            ### Confidence Score:
-            [A numerical value between 0.00 and 1.00]
-            
-            ### Model: {model}
-            """
+            # ### Model: {model}
+            # """
             
 
             response = await self.client.chat.completions.create(
