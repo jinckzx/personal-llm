@@ -10,14 +10,17 @@ from .synthesis import SynthesisHandler
 from ..utils.extractors import ResponseExtractor
 from ..utils.prompt_utils import read_iteration_prompt
 from dotenv import load_dotenv
-
+from .logging import logger
+from .synthesis_db import SynthesisDatabaseHandler
 load_dotenv()
-
 class ConsortiumRunner:
     def __init__(self):
         self.client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         self.db_handler = DatabaseHandler()
         self.extractor = ResponseExtractor()
+        ################################################################
+        self.synthesis_db_handler = SynthesisDatabaseHandler()
+        ################################################################
         self.synthesis_handler = SynthesisHandler(self.client, self.extractor)
         self.index = VectorStoreIndex.from_documents(
             SimpleDirectoryReader("data").load_data()
@@ -66,6 +69,10 @@ class ConsortiumRunner:
         final_result = None
 
         try:
+            #################################################################
+            for iteration in range(config.max_iterations):
+                logger.info(f"Starting iteration {iteration + 1} of {config.max_iterations}")
+            ###############################################################    
             for iteration in range(config.max_iterations):
                 tasks = [
                     self._query_model(model, prompt, instance, iteration)
@@ -80,13 +87,19 @@ class ConsortiumRunner:
                         continue
                     self.db_handler.log_interaction(result)
                     responses.append(result.to_dict())
-
                 synthesis = await self.synthesis_handler.synthesize(
                     prompt, 
                     [r for r in results if not isinstance(r, Exception)],
-                    config.arbiter
+                    config.arbiter,
+                    ################################################
+                    iteration + 1  # Pass current iteration number
                 )
-
+                logger.info(
+                    f"Iteration {iteration + 1} - "
+                    f"Confidence Score: {synthesis['confidence']:.2f}/"
+                    f"{config.confidence_threshold}"
+                )
+                #################################################3
                 final_result = {
                     "synthesis": synthesis,
                     "raw_responses": responses,
@@ -99,5 +112,5 @@ class ConsortiumRunner:
 
         finally:
             self.db_handler.close()
-
+            self.synthesis_db_handler.close()
         return final_result
