@@ -8,7 +8,7 @@ from ..config.models import ConsortiumConfig, LogEntry
 from .database import DatabaseHandler
 from .synthesis import SynthesisHandler
 from ..utils.extractors import ResponseExtractor
-from ..utils.prompt_utils import read_iteration_prompt
+from ..utils.prompt_utils import read_iteration_prompt , read_system_prompt
 from dotenv import load_dotenv
 from .logging import logger
 from .synthesis_db import SynthesisDatabaseHandler
@@ -25,6 +25,7 @@ class ConsortiumRunner:
         self.index = VectorStoreIndex.from_documents(
             SimpleDirectoryReader("data").load_data()
         )
+        self.system_prompt=read_system_prompt()
         self.iteration_prompt_template = read_iteration_prompt()
 
     async def _query_model(self, model: str, prompt: str, instance: int, iteration: int) -> LogEntry:
@@ -38,10 +39,13 @@ class ConsortiumRunner:
                 prompt=prompt,
                 model=model
             )
-            
+            messages = [
+                {"role": "system", "content": self.system_prompt},
+                {"role": "user", "content": model_prompt}
+            ]
             response = await self.client.chat.completions.create(
                 model=model,
-                messages=[{"role": "user", "content": model_prompt}],
+                messages=messages,
                 temperature=0.2
             )
             content = response.choices[0].message.content
