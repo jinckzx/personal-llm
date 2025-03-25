@@ -1,5 +1,5 @@
 import gradio as gr
-from llm_consortium.core.consortium import ConsortiumRunner
+from llm_consortium.core.runner import ConsortiumRunner #changed from .consortium to .runner
 from llm_consortium.config.models import ConsortiumConfig
 import asyncio
 import json
