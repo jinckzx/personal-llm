@@ -6,7 +6,7 @@ from ..utils.extractors import ResponseExtractor
 from typing import List, Dict
 from openai import AsyncOpenAI
 from ..config.models import LogEntry
-from ..utils.prompt_utils import read_arbiter_prompt
+from ..utils.prompt_utils import read_arbiter_prompt, read_arbiter_system_prompt
 from ..utils.extractors import ResponseExtractor
 from .synthesis_db import SynthesisDatabaseHandler
 
@@ -16,6 +16,7 @@ class SynthesisHandler:
         self.client = client
         self.extractor = extractor
         self.db_handler = SynthesisDatabaseHandler()
+        self.arbiter_system_prompt = read_arbiter_system_prompt()
 
     async def synthesize(self, prompt: str, responses: List[LogEntry], 
                         arbiter: str, iteration: int) -> Dict:
@@ -29,11 +30,14 @@ class SynthesisHandler:
             comparisons=comparisons,
             arbiter=arbiter
         )
-        
+        #Updated messages with system prompt
+        messages = [{"role": "system", "content": self.arbiter_system_prompt},
+                    {"role": "user", "content": synthesis_prompt}]
         try:
             response = await self.client.chat.completions.create(
                 model=arbiter,
-                messages=[{"role": "user", "content": synthesis_prompt}],
+                # messages=[{"role": "user", "content": synthesis_prompt}],
+                messages=messages,
                 temperature=0.2
             )
             content = response.choices[0].message.content
