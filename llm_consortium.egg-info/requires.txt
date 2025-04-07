@@ -2,3 +2,4 @@ gradio
 pydantic
 llama-index
 openai
+streamlit

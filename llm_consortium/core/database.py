@@ -3,9 +3,8 @@ import threading
 from datetime import datetime
 from typing import Optional
 from ..config.models import LogEntry
-
 class DatabaseHandler:
-    def __init__(self, db_path: str = 'consortium.db'):
+    def __init__(self, db_path: str = 'sql_pop.db'):
         self.db_path = db_path
         self.thread_local = threading.local()
         self._init_db()
@@ -34,7 +33,9 @@ class DatabaseHandler:
                     response TEXT,
                     confidence REAL,
                     latency REAL,
-                    iteration INTEGER
+                    iteration INTEGER,
+                    intent TEXT,  -- New column
+                    db_id TEXT    -- New column
                 )''')
             conn.commit()
         except sqlite3.Error as e:
@@ -46,8 +47,8 @@ class DatabaseHandler:
             conn = self._get_connection()
             conn.execute('''
                 INSERT INTO interactions 
-                (timestamp, prompt, model, response, confidence, latency, iteration)
-                VALUES (?, ?, ?, ?, ?, ?, ?)''',
+                (timestamp, prompt, model, response, confidence, latency, iteration, intent, db_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',  # Updated
                 (
                     entry.timestamp,
                     entry.prompt,
@@ -55,10 +56,51 @@ class DatabaseHandler:
                     entry.response,
                     entry.confidence,
                     entry.latency,
-                    entry.iteration
+                    entry.iteration,
+                    entry.intent,  # New field
+                    entry.db_id   # New field
                 )
             )
             conn.commit()
+
+#     def _init_db(self):
+#         """Initialize database schema"""
+#         try:
+#             conn = self._get_connection()
+#             conn.execute('''
+#                 CREATE TABLE IF NOT EXISTS interactions (
+#                     id INTEGER PRIMARY KEY AUTOINCREMENT,
+#                     timestamp DATETIME,
+#                     prompt TEXT,
+#                     model TEXT,
+#                     response TEXT,
+#                     confidence REAL,
+#                     latency REAL,
+#                     iteration INTEGER
+#                 )''')
+#             conn.commit()
+#         except sqlite3.Error as e:
+#             raise RuntimeError(f"Database initialization failed: {str(e)}")
+
+#     def log_interaction(self, entry: LogEntry):
+#         """Log an interaction to the database"""
+#         try:
+#             conn = self._get_connection()
+#             conn.execute('''
+#                 INSERT INTO interactions 
+#                 (timestamp, prompt, model, response, confidence, latency, iteration)
+#                 VALUES (?, ?, ?, ?, ?, ?, ?)''',
+#                 (
+#                     entry.timestamp,
+#                     entry.prompt,
+#                     entry.model,
+#                     entry.response,
+#                     entry.confidence,
+#                     entry.latency,
+#                     entry.iteration
+#                 )
+#             )
+#             conn.commit()
         except sqlite3.Error as e:
             conn.rollback()
             raise RuntimeError(f"Failed to log interaction: {str(e)}")

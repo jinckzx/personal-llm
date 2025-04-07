@@ -29,3 +29,9 @@ class ResponseExtractor:
             return text[start_idx:end_idx].strip()
         except ValueError:
             return ""
+    @staticmethod
+    def extract_intent(text: str) -> str:
+        """Extracts the intent from model output."""
+        if match := re.search(r"### NLQ Intent:\s*(.*?)(?=\n###|$)", text, re.DOTALL):
+            return match.group(1).strip()
+        return "Unknown"

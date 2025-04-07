@@ -1,0 +1,4 @@
+db_id,question
+scientist_1,"What are the names of the scientists, and how many projects are each of them working on?"
+sakila_1,Find all the payment dates for the payments with an amount larger than 10 and the payments handled by a staff person with the first name Elsa.
+gas_company,"For each company id, what are the companies and how many gas stations does each one operate?"

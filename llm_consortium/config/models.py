@@ -11,6 +11,7 @@ class ConsortiumConfig(BaseModel):
     confidence_threshold: float = 0.8
     max_iterations: int = 3
     min_iterations: int = 1
+    
 
 # class LogEntry(BaseModel):
 #     timestamp: str = Field(default_factory=lambda: datetime.now().isoformat())
@@ -21,17 +22,17 @@ class ConsortiumConfig(BaseModel):
 #     latency: float
 #     iteration: int
 
-
 class LogEntry(BaseModel):
-    timestamp: datetime = Field(default_factory=datetime.now)
     prompt: str
     model: str
     response: str
     confidence: float
     latency: float
     iteration: int
-    error: Optional[str] = None
-
+    intent: str = ""  # New field with default
+    db_id: str = ""   # New field with default
+    timestamp: datetime = datetime.now()
+    error: Optional[str]=None
     def to_dict(self):
         """Convert the LogEntry object to a dictionary."""
         return {

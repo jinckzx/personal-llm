@@ -1,0 +1,16 @@
+Context: {context}
+            
+Question: {prompt}
+            
+Provide your response in this exact format, in the "Answer" ONLY WRITE THE SQL Query:
+            
+### Answer:
+[Your answer here]
+
+### NLQ Intent:
+[The Question/Prompt falls under which Data Retrival/Aggregation/Data Manipulation/Join & Relationship Logical Operations etc.]
+
+### Confidence Score:
+[A numerical value between 0.00 and 1.00]
+            
+### Model: {model}
